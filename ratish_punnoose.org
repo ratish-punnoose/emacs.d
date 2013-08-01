@@ -136,8 +136,7 @@ evaluate this file itself.
 (starter-kit-load "org")
 #+end_src
 
-** My customization
-*** Org global configuration and shortcuts
+** Org global configuration and shortcuts
 #+begin_src emacs-lisp 
 (set-time-zone-rule "GMT+7")
 (setq org-directory "~/org")
@@ -152,7 +151,7 @@ evaluate this file itself.
 (setq org-hide-leading-stars t)
 
 #+end_src
-*** Org capture
+** Org capture
 #+begin_src emacs-lisp :tangle yes
 (setq  org-agenda-files (quote ("~/org/jnl.org")))
 (setq  org-refile-targets '((org-agenda-files  :maxlevel . 3)))
@@ -186,9 +185,8 @@ evaluate this file itself.
 
 #+end_src
 
-
-*** Org beamer
-**** Emphasis lists are set before org is loaded. Currently this is set in [[file:init.el::(setq%20org-emphasis-alist][init.el]].
+** Org beamer
+*** Emphasis lists are set before org is loaded. Currently this is set in [[file:init.el::(setq%20org-emphasis-alist][init.el]].
 #+begin_src emacs-lisp :tangle no
   (setq org-emphasis-alist 
         (quote (("*" bold "<b>" "</b>") 
@@ -209,21 +207,72 @@ evaluate this file itself.
         )
   
 #+end_src
-**** Set code export to minted
-#+BEGIN_SRC emacs-lisp
+*** Set code export to minted
+#+BEGIN_SRC emacs-lisp :tangle yes
   (setq org-export-latex-listings 'minted)
   (setq org-export-latex-minted-options
            '(("frame" "lines")
              ("fontsize" "\\scriptsize")
              ("linenos" "")))
 #+END_SRC
-**** Set language aliases
+*** Set language aliases
 However this is not done rightaway.  So setup a hook for this.
 #+BEGIN_SRC emacs-lisp :tangle yes
     (add-hook 'org-export-latex-after-initial-vars-hook 
               '(lambda() 
                  (add-to-list 'org-export-latex-minted-langs '(verilog "v"))  
                  ))
+#+END_SRC
+** Org diff
+Taken from [[http://lists.gnu.org/archive/html/emacs-orgmode/2013-04/msg00400.html][gnu archive]]. This turns expands everything before funning diff.
+#+BEGIN_SRC emacs-lisp :tangle no
+  (add-hook 'ediff-prepare-buffer-hook 'f-ediff-prepare-buffer-hook-setup)
+  (defun f-ediff-prepare-buffer-hook-setup ()
+    ;; specific modes
+    (cond ((eq major-mode 'org-mode)
+           (f-org-vis-mod-maximum))
+          ;; room for more modes
+          )
+    ;; all modes
+    (setq truncate-lines nil))
+  (defun f-org-vis-mod-maximum ()
+    "Visibility: Show the most possible."
+    (cond
+     ((eq major-mode 'org-mode)
+      (visible-mode 1)  ; default 0
+      (setq truncate-lines nil)  ; no `org-startup-truncated' in hook
+      (setq org-hide-leading-stars t))  ; default nil
+     (t
+      (message "ERR: not in Org mode")
+      (ding))))
+#+END_SRC
+My customization to allow folding and unfolding
+#+BEGIN_SRC emacs-lisp
+  ;; diff hooks for org mode
+  (add-hook 'ediff-select-hook 'f-ediff-org-unfold-tree-element)
+  (add-hook 'ediff-unselect-hook 'f-ediff-org-fold-tree)
+  ;; Check for org mode and existence of buffer
+  (defun f-ediff-org-showhide(buf command &rest cmdargs)
+    "If buffer exists and is orgmode then execute command"
+    (if buf
+        (if (eq (buffer-local-value 'major-mode (get-buffer buf)) 'org-mode)
+            (save-excursion (set-buffer buf) (apply command cmdargs)))
+      )
+    )
+    
+  (defun f-ediff-org-unfold-tree-element ()
+    "Unfold tree at diff location"
+    (f-ediff-org-showhide ediff-buffer-A 'org-reveal)  
+    (f-ediff-org-showhide ediff-buffer-B 'org-reveal)  
+    (f-ediff-org-showhide ediff-buffer-C 'org-reveal)  
+    )
+  ;;
+  (defun f-ediff-org-fold-tree ()
+    "Fold tree back to top level"
+    (f-ediff-org-showhide ediff-buffer-A 'hide-sublevels 1)  
+    (f-ediff-org-showhide ediff-buffer-B 'hide-sublevels 1)  
+    (f-ediff-org-showhide ediff-buffer-C 'hide-sublevels 1)  
+    )
 #+END_SRC
 
 * Cygwin and Windows
@@ -267,6 +316,21 @@ not already in the Windows path.
   (cygwin-mount-activate)
 #+end_src
 
+** Line endings
+On windows emacs uses dos line feeds. Fix this.
+#+BEGIN_SRC emacs-lisp
+(setq default-buffer-file-coding-system 'utf-8-unix)
+#+END_SRC
+
+** Slow startup time on disconnected machine
+This is due to emacs not being able to obtain the hostname easily. To
+solve this find the hosts file on Windows. For Windows 7 it is at
+"c:\Windows\system32\drivers\etc".  Edit the hosts file and uncomment/add
+the two lines below.
+#+BEGIN_SRC 
+127.0.0.1  localhost loopback
+::1        localhost
+#+END_SRC
 * Testing
 #+BEGIN_SRC emacs-lisp
 (setq initial-scratch-message "dummy message")
