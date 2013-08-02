@@ -209,20 +209,28 @@ evaluate this file itself.
 #+end_src
 *** Set code export to minted
 #+BEGIN_SRC emacs-lisp :tangle yes
-  (setq org-export-latex-listings 'minted)
-  (setq org-export-latex-minted-options
+  (require 'ox-latex)
+  (setq org-latex-listings 'minted)
+  (add-to-list 'org-latex-packages-alist '("" "minted"))
+  
+  (setq org-latex-minted-options
            '(("frame" "lines")
              ("fontsize" "\\scriptsize")
              ("linenos" "")))
 #+END_SRC
 *** Set language aliases
-However this is not done rightaway.  So setup a hook for this.
-#+BEGIN_SRC emacs-lisp :tangle yes
-    (add-hook 'org-export-latex-after-initial-vars-hook 
-              '(lambda() 
-                 (add-to-list 'org-export-latex-minted-langs '(verilog "v"))  
+In versions < 8, this was not done rightaway. So a hook was needed.
+#+BEGIN_SRC emacs-lisp :tangle no
+    (add-hook 'org-export-before-processing-hook 
+              '(lambda(backend) 
+                 (add-to-list 'org-latex-minted-langs '(verilog "v"))  
                  ))
 #+END_SRC
+In version 8, this is simpler.
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'org-latex-minted-langs '(verilog "v"))    
+#+END_SRC
+
 ** Org diff
 Taken from [[http://lists.gnu.org/archive/html/emacs-orgmode/2013-04/msg00400.html][gnu archive]]. This turns expands everything before funning diff.
 #+BEGIN_SRC emacs-lisp :tangle no
