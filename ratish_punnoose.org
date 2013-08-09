@@ -194,7 +194,10 @@ evaluate this file itself.
       (lambda () (interactive) (org-capture nil "t")))
 
 #+end_src
-
+Also log into drawer
+#+BEGIN_SRC emacs-lisp
+(set 'org-log-into-drawer t)
+#+END_SRC
 ** Org beamer
 *** Emphasis lists are set before org is loaded. Currently this is set in [[file:init.el::(setq%20org-emphasis-alist][init.el]].
 #+begin_src emacs-lisp :tangle no
@@ -242,28 +245,6 @@ In version 8, this is simpler.
 #+END_SRC
 
 ** Org diff
-Taken from [[http://lists.gnu.org/archive/html/emacs-orgmode/2013-04/msg00400.html][gnu archive]]. This turns expands everything before funning diff.
-#+BEGIN_SRC emacs-lisp :tangle no
-  (add-hook 'ediff-prepare-buffer-hook 'f-ediff-prepare-buffer-hook-setup)
-  (defun f-ediff-prepare-buffer-hook-setup ()
-    ;; specific modes
-    (cond ((eq major-mode 'org-mode)
-           (f-org-vis-mod-maximum))
-          ;; room for more modes
-          )
-    ;; all modes
-    (setq truncate-lines nil))
-  (defun f-org-vis-mod-maximum ()
-    "Visibility: Show the most possible."
-    (cond
-     ((eq major-mode 'org-mode)
-      (visible-mode 1)  ; default 0
-      (setq truncate-lines nil)  ; no `org-startup-truncated' in hook
-      (setq org-hide-leading-stars t))  ; default nil
-     (t
-      (message "ERR: not in Org mode")
-      (ding))))
-#+END_SRC
 My customization to allow folding and unfolding
 #+BEGIN_SRC emacs-lisp
   ;; diff hooks for org mode
