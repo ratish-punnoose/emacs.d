@@ -330,6 +330,39 @@ the two lines below.
 127.0.0.1  localhost loopback
 ::1        localhost
 #+END_SRC
+
+* Language Support
+
+** Generic Language extensions
+#+BEGIN_SRC emacs-lisp
+(setq auto-mode-alist
+      (append '(("\\.C$"  . c++-mode)
+		("\\.cc$" . c++-mode)
+		("\\.hh$" . c++-mode)
+		("\\.c$"  . c++-mode)
+		("\\.h$"  . c++-mode)
+		("\\.pov$"  . c++-mode)
+		("\\.m$"  . matlab-mode)
+		("\\.php$"  . php-mode)
+		("\\.php3$"  . php-mode)
+		("\\.rb$"  . ruby-mode)
+		("\\.pml$"  . promela-mode)
+		("\\.smv$"  . nusmv-mode)
+		("\\.spin$"  . promela-mode)
+		("\\.js$"  . javascript-mode)
+		("\\.java$" . java-mode))
+	      auto-mode-alist))
+#+END_SRC
+** Matlab
+#+BEGIN_SRC emacs-lisp
+  (autoload 'matlab-mode "matlab" "Matlab Mode" t)
+  (setq matlab-indent-function t)
+  
+  ;;(autoload 'matlab-shell "matlab" "Interactive Matlab mode." t)
+  ;;(setq matlab-shell-command "/usr/local/bin/matlabShell")
+  (custom-set-variables
+   '(matlab-functions-have-end t))
+#+END_SRC
 * Testing
 #+BEGIN_SRC emacs-lisp
 (setq initial-scratch-message "dummy message")
@@ -428,12 +461,6 @@ Add this to .emacs to run gofmt on the current buffer when saving:
 
 (autoload 'java-mode "/usr/lib/emacs/site-lisp/java-mode" "java mode" t nil)
 
-(autoload 'matlab-mode "matlab" "Matlab Mode" t)
-(setq matlab-indent-function t)
-
-
-(autoload 'matlab-shell "matlab" "Interactive Matlab mode." t)
-(setq matlab-shell-command "/usr/local/bin/matlabShell")
 
 (autoload 'php-mode "php-mode" "PHP Mode" t)
 
@@ -457,23 +484,6 @@ Add this to .emacs to run gofmt on the current buffer when saving:
 (autoload 'markdown-mode "markdown-mode" "Markdown major mode" t)
 
 
-(setq auto-mode-alist
-      (append '(("\\.C$"  . c++-mode)
-		("\\.cc$" . c++-mode)
-		("\\.hh$" . c++-mode)
-		("\\.c$"  . c++-mode)
-		("\\.h$"  . c++-mode)
-		("\\.pov$"  . c++-mode)
-		("\\.m$"  . matlab-mode)
-		("\\.php$"  . php-mode)
-		("\\.php3$"  . php-mode)
-		("\\.rb$"  . ruby-mode)
-		("\\.pml$"  . promela-mode)
-		("\\.smv$"  . nusmv-mode)
-		("\\.spin$"  . promela-mode)
-		("\\.js$"  . javascript-mode)
-		("\\.java$" . java-mode))
-	      auto-mode-alist))
 (add-hook 'c-mode-hook 'font-lock-mode)
 (add-hook 'c++-mode-hook 'font-lock-mode)		
 (add-hook 'c-mode-hook 'imenu-add-menubar-index)
